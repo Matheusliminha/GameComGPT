@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definição do tabuleiro de xadrez 8x8
+char tabuleiro[8][8];
+
+// Função para inicializar o tabuleiro de xadrez
+void inicializarTabuleiro() {
+    // Inicializar as peças brancas (P para peão, R para torre, N para cavalo, B para bispo, Q para rainha, K para rei)
+    tabuleiro[0][0] = tabuleiro[0][7] = 'R'; // Torres
+    tabuleiro[0][1] = tabuleiro[0][6] = 'N'; // Cavalos
+    tabuleiro[0][2] = tabuleiro[0][5] = 'B'; // Bispos
+    tabuleiro[0][3] = 'Q'; // Rainha
+    tabuleiro[0][4] = 'K'; // Rei
+    for (int i = 0; i < 8; i++) tabuleiro[1][i] = 'P'; // Peões brancos
+
+    // Inicializar as peças pretas
+    tabuleiro[7][0] = tabuleiro[7][7] = 'r'; // Torres
+    tabuleiro[7][1] = tabuleiro[7][6] = 'n'; // Cavalos
+    tabuleiro[7][2] = tabuleiro[7][5] = 'b'; // Bispos
+    tabuleiro[7][3] = 'q'; // Rainha
+    tabuleiro[7][4] = 'k'; // Rei
+    for (int i = 0; i < 8; i++) tabuleiro[6][i] = 'p'; // Peões pretos
+
+    // Inicializar espaços vazios
+    for (int i = 2; i < 6; i++) {
+        for (int j = 0; j < 8; j++) {
+            tabuleiro[i][j] = '.';
+        }
+    }
+}
+
+// Função para exibir o tabuleiro
+void exibirTabuleiro() {
+    printf("  a b c d e f g h\n");
+    for (int i = 0; i < 8; i++) {
+        printf("%d ", 8 - i);
+        for (int j = 0; j < 8; j++) {
+            printf("%c ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Função para converter a notação de xadrez para índices do tabuleiro
+void converterEntrada(char *entrada, int *linhaOrigem, int *colunaOrigem, int *linhaDestino, int *colunaDestino) {
+    *colunaOrigem = entrada[0] - 'a';
+    *linhaOrigem = 8 - (entrada[1] - '0');
+    *colunaDestino = entrada[2] - 'a';
+    *linhaDestino = 8 - (entrada[3] - '0');
+}
+
+// Função para mover uma peça
+int moverPeca(int linhaOrigem, int colunaOrigem, int linhaDestino, int colunaDestino) {
+    if (tabuleiro[linhaOrigem][colunaOrigem] == '.') {
+        printf("Movimento inválido! Não há peça na posição de origem.\n");
+        return 0;
+    }
+
+    // Verifica se o movimento está dentro do tabuleiro
+    if (linhaDestino < 0 || linhaDestino > 7 || colunaDestino < 0 || colunaDestino > 7) {
+        printf("Movimento inválido! Fora do tabuleiro.\n");
+        return 0;
+    }
+
+    // Realiza o movimento
+    tabuleiro[linhaDestino][colunaDestino] = tabuleiro[linhaOrigem][colunaOrigem];
+    tabuleiro[linhaOrigem][colunaOrigem] = '.';
+
+    return 1;
+}
+
+int main() {
+    char jogada[5];
+    int linhaOrigem, colunaOrigem, linhaDestino, colunaDestino;
+    int turno = 1; // 1 para brancas, -1 para pretas
+
+    // Inicializar o tabuleiro
+    inicializarTabuleiro();
+
+    // Exibir o tabuleiro inicial
+    exibirTabuleiro();
+
+    // Loop principal do jogo
+    while (1) {
+        // Exibir de quem é o turno
+        if (turno == 1) {
+            printf("Turno das brancas.\n");
+        } else {
+            printf("Turno das pretas.\n");
+        }
+
+        // Solicitar a jogada
+        printf("Digite a jogada (ex: e2e4): ");
+        scanf("%s", jogada);
+
+        // Converter a jogada para índices
+        converterEntrada(jogada, &linhaOrigem, &colunaOrigem, &linhaDestino, &colunaDestino);
+
+        // Mover a peça
+        if (moverPeca(linhaOrigem, colunaOrigem, linhaDestino, colunaDestino)) {
+            // Alterna o turno
+            turno = -turno;
+
+            // Exibe o tabuleiro após o movimento
+            exibirTabuleiro();
+        }
+    }
+
+    return 0;
+}
